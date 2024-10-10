@@ -5,9 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Flappy Edit</title>
     <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body>
     <canvas id="myCanvas"></canvas>
+    <div style="display: none">
+      <img id="source" src="edit.jpg" />
+      <img id="source_background" src="background.jpg" />
+    </div>
+    <div
+      id="gameOver"
+      class="flex flex-col h-20 w-full h-full items-center justify-center"
+      style="display: none"
+    >
+      <div id="timeText"></div>
+      <button onclick="play_again()">Play Again</button>
+    </div>
     <script src="script.js"></script>
   </body>
 </html>

@@ -3,6 +3,17 @@ const canvas = document.getElementById('myCanvas');
 // Set canvas dimensions to match the viewport
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
+const image = document.getElementById("source");
+const background_image = document.getElementById("source_background");
+var audio = new Audio('happy_birthday.mp3');
+audio.play();
+audio.addEventListener('ended', function() {
+    this.currentTime = 0;
+    this.play();
+}, false);
+
+var dead = false;
+var result_time = 0;
 
 // Create a 2D drawing context
 const ctx = canvas.getContext('2d');
@@ -10,8 +21,7 @@ const ctx = canvas.getContext('2d');
 time = 0;
 
 function clear() {
-ctx.fillStyle = "skyblue";
-ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(background_image, 0,0, canvas.width, canvas.height)
 }
 
 // Adjust canvas size on window resize
@@ -22,7 +32,7 @@ window.addEventListener('resize', () => {
 });
 clear(ctx)
 
-player = {pos: [10,50], vel: [0, 0], size: [5,5]}
+player = {pos: [10,50], vel: [0, 0], size: [17,17]}
 
 window.addEventListener('keydown', (event) => {
   if (event.code === "Space") {
@@ -50,19 +60,19 @@ function draw() {
   ctx.fillStyle = "red";
   let player_coords = convert_to_screen(player.pos);
   let player_size = scale_to_min_dim(player.size);
-  ctx.fillRect(player_coords[0]-player_size[0]/2, player_coords[1]-player_size[1]/2, player_size[0], player_size[1])
+  ctx.drawImage(image, player_coords[0]-player_size[0]/2, player_coords[1]-player_size[1]/2, player_size[0], player_size[1])
   ctx.fillStyle = "green";
   console.log(pipes[0][0])
 
-  let upper_l = convert_to_screen([0,10])
-  ctx.fillStyle = "green";
-  ctx.fillRect(upper_l[0], upper_l[1], canvas.width, canvas.height)
+  ctx.fillStyle = "pink";
   for (p =0; p< pipes.length; p++) {
     let pipe_middle = convert_to_screen(pipes[p]);
-    ctx.fillRect(pipe_middle[0] - player_size[0]*1, pipe_middle[1]+player_size[1]*2, player_size[0]*2, canvas.height - (pipe_middle[1]+player_size[1]*2));
-    ctx.fillRect(pipe_middle[0] - player_size[0]*1, 0, player_size[0]*2, pipe_middle[1]-player_size[1]*2)
+    ctx.fillRect(pipe_middle[0] - player_size[0]*0.5, pipe_middle[1]+player_size[1]*1.25, player_size[0], canvas.height - (pipe_middle[1]+player_size[1]*1.25));
+    ctx.fillRect(pipe_middle[0] - player_size[0]*0.5, 0, player_size[0], pipe_middle[1]-player_size[1]*1.25)
   }
-  ctx.fillText(String(Math.floor(time/10)) +"."+ String(time %10), 15,15)
+  ctx.font = "30px Arial";
+
+  ctx.fillText(String(Math.floor(time/10)) +"."+ String(time %10), 30,30)
 }
 
 dt = 0.02;
@@ -79,7 +89,7 @@ function update() {
   player.vel[1] -= gravity * dt;
   player.pos[1] += player.vel[1] * dt;
   for (p = 0; p< pipes.length; p++) {
-    pipes[p][0] -= 50*dt;
+    pipes[p][0] -= 70*dt;
     if (pipes[p][0] < -100.) {
       pipes.splice(p,1);
     }
@@ -87,22 +97,32 @@ function update() {
 }
 
 function death() {
-  
-    alert("you died, time: " + String(Math.floor(time/10)) +"."+ String(time %10))
-    timertimertime = Date.now();
-    player.pos=[10,50]
-    player.vel=[0,0]
-    pipes = []
+  if (!dead){ 
+  canvas.style.display = "none"
+  document.getElementById("gameOver").style.display = "flex";
+  document.getElementById("timeText").innerHTML = "time: " +  String(Math.floor(time/10)) +"."+ String(time %10)
+  dead = true;
+  }
+}
+
+function play_again() {
+  player = {pos: [10,50], vel: [0, 0], size: [17,17]}
+  timertimertime=Date.now()
+  pipes = []
+  dead = false
+  canvas.style.display = "block"
+  document.getElementById("gameOver").style.display = "none";
+
 }
 
 timertimertime = Date.now();
 function check_collision() {
-  if (player.pos[1] < 10 + player.size[1]/2){
+  if (player.pos[1] < - player.size[1]){
     death()
   }
   for (p = 0; p < pipes.length; p++) {
     let pos = pipes[p];
-    if (Math.abs(pos[0] - player.pos[0]) < player.size[0]*1.5 && (player.pos[1] > pos[1] + player.size[1]*1.5 || player.pos[1] < pos[1]-player.size[1]*1.5)) {
+    if (Math.abs(pos[0] - player.pos[0]) < player.size[0]/2 && (player.pos[1] > pos[1] + player.size[1]*0.75 || player.pos[1] < pos[1]-player.size[1]*0.75)) {
       death()
     }
   }
