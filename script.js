@@ -6,7 +6,7 @@ canvas.height = window.innerHeight;
 const image = document.getElementById("source");
 const background_image = document.getElementById("source_background");
 var audio = new Audio('happy_birthday.mp3');
-window.addEventListener("click", () => {
+canvas.addEventListener("click", () => {
   audio.play();
 })
 audio.play();
